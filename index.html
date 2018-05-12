@@ -4,39 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
     <title>Rail Addresses Map</title>
     <script src = "xlsx.full.min.js"></script>
-    <script>
-/* set up XMLHttpRequest */
-var addresses = [];
-var url = "test.xlsx";
-var oReq = new XMLHttpRequest();
-oReq.open("GET", url, true);
-oReq.responseType = "arraybuffer";
-
-oReq.onload = function(e) {
-  var arraybuffer = oReq.response;
-
-  /* convert data to binary string */
-  var data = new Uint8Array(arraybuffer);
-  var arr = new Array();
-  for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-  var bstr = arr.join("");
-
-  /* Call XLSX */
-  var workbook = XLSX.read(bstr, {type:"binary"});
-
-  /* DO SOMETHING WITH workbook HERE */
-  var first_sheet_name = workbook.SheetNames[0];
-  /* Get worksheet */
-  var worksheet = workbook.Sheets[first_sheet_name];
-  addressjson = XLSX.utils.sheet_to_json(worksheet,{raw:true});
-  for (var i = 0; i < addressjson.length; i++) {
-    var entry = addressjson[i];
-    addresses.push(entry.Address);
-}
-}
-
-oReq.send();
-</script>
+    <script src="jquerymin.js"></script>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
@@ -69,17 +37,36 @@ oReq.send();
   <body>
     <div id="map"></div>
     <script>
+
+
       function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
+         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 13,
           center: {lat: 37.4419, lng: 122.1430}
         });
+        console.log(addresses);
         var geocoder = new google.maps.Geocoder();
-        for(var i=0; i<addresses.length; i++){
-          addMarker(geocoder,map,addresses[i]);
+        var addresses = [];
+$.ajax({
+        url: 'https://sheets.googleapis.com/v4/spreadsheets/1TD6EKKAL717hq3azykBka0V8FKlh06fFrUuutr8r-VU/values/Sheet1?key=AIzaSyDvIeECwbT5xVEE_ntRnndzJ3GAKNUFFos',
+        type: 'GET',
+        dataType: "json",
+        success: displayAll
+    });
+
+function displayAll(data){
+
+  addressjson = data;
+  for (var i = 1; i < addressjson.values.length; i++) {
+    var entry = addressjson.values[i];
+    addMarker(geocoder,map,entry[1]);
+
+}
+}
+       
+          
         }
-    
-      }
+
 
       function addMarker(geocoder, resultsMap, string) {
         var address = string;
@@ -96,8 +83,16 @@ oReq.send();
         });
       }
     </script>
+
+    
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwkySP3nSq82zce2Ie-fVPWpRZU1huUQs&callback=initMap">
     </script>
+    <cffunction name="optionsMethod" access="remote" output="false" returntype="any" httpmethod="OPTIONS" description="Method to respond to AngularJS trial call">
+    <cfheader name="Access-Control-Allow-Headers" value="Content-Type,x-requested-with,Authorization,Access-Control-Allow-Origin"> 
+    <cfheader name="Access-Control-Allow-Methods" value="GET,OPTIONS">      
+    <cfheader name="Access-Control-Allow-Origin" value="*">      
+    <cfheader name="Access-Control-Max-Age" value="360">        
+</cffunction>
   </body>
 </html>
