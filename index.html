@@ -1,1 +1,103 @@
-Hello World
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <title>Rail Addresses Map</title>
+    <script src = "xlsx.full.min.js"></script>
+    <script>
+/* set up XMLHttpRequest */
+var addresses = [];
+var url = "test.xlsx";
+var oReq = new XMLHttpRequest();
+oReq.open("GET", url, true);
+oReq.responseType = "arraybuffer";
+
+oReq.onload = function(e) {
+  var arraybuffer = oReq.response;
+
+  /* convert data to binary string */
+  var data = new Uint8Array(arraybuffer);
+  var arr = new Array();
+  for(var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+  var bstr = arr.join("");
+
+  /* Call XLSX */
+  var workbook = XLSX.read(bstr, {type:"binary"});
+
+  /* DO SOMETHING WITH workbook HERE */
+  var first_sheet_name = workbook.SheetNames[0];
+  /* Get worksheet */
+  var worksheet = workbook.Sheets[first_sheet_name];
+  addressjson = XLSX.utils.sheet_to_json(worksheet,{raw:true});
+  for (var i = 0; i < addressjson.length; i++) {
+    var entry = addressjson[i];
+    addresses.push(entry.Address);
+}
+}
+
+oReq.send();
+</script>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 37.4419, lng: 122.1430}
+        });
+        var geocoder = new google.maps.Geocoder();
+        for(var i=0; i<addresses.length; i++){
+          addMarker(geocoder,map,addresses[i]);
+        }
+    
+      }
+
+      function addMarker(geocoder, resultsMap, string) {
+        var address = string;
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === 'OK') {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwkySP3nSq82zce2Ie-fVPWpRZU1huUQs&callback=initMap">
+    </script>
+  </body>
+</html>
