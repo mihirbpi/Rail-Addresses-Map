@@ -73,17 +73,16 @@ function displayAll(data){
         var address = string;
         geocoder.geocode({'address': address}, function(results, status) {
           if (status === 'OK') {
-            console.log(markerCount);
             markerCount++;
+            console.log(markerCount);
             var marker = new google.maps.Marker({
               map: resultsMap,
               position: results[0].geometry.location
             });
           } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
                 setTimeout(function () {
-                    //Recursively calling spotPosition method for lost addresses
                     addMarker(geocoder,resultsMap,address);
-                }, 0.2);
+                }, 0);
             }
            else {
             alert('Geocode was not successful for the following reason: ' + status);
