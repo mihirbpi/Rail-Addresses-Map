@@ -48,7 +48,7 @@ var markerCount = 0;
         var geocoder = new google.maps.Geocoder();
         var addresses = [];
 $.ajax({
-        url: 'https://sheets.googleapis.com/v4/spreadsheets/1TD6EKKAL717hq3azykBka0V8FKlh06fFrUuutr8r-VU/values/Sheet1?key=AIzaSyDvIeECwbT5xVEE_ntRnndzJ3GAKNUFFos',
+        url: 'https://sheets.googleapis.com/v4/spreadsheets/1uI3yuwTE-ErIe9ADffSMdD6RBob6O-IquzPYiflZ8Kk/values/Sheet1?key=AIzaSyDvIeECwbT5xVEE_ntRnndzJ3GAKNUFFos',
         type: 'GET',
         dataType: "json",
         success: displayAll
@@ -59,7 +59,7 @@ function displayAll(data){
   addressjson = data;
 (function theLoop (i) {
   setTimeout(function () {
-    addMarker(geocoder,map,addressjson.values[i][1]);
+    addMarker(geocoder,map,addressjson.values[i][5]);
     if (--i) {         
       theLoop(i);       
     }
