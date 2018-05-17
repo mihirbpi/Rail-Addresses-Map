@@ -63,7 +63,7 @@ function displayAll(data){
     if (--i) {         
       theLoop(i);       
     }
-  }, 0);
+  }, 100);
 })(addressjson.values.length-1);
 } 
         }
@@ -85,7 +85,7 @@ function displayAll(data){
                 }, 0);
             }
            else {
-            alert('Geocode was not successful for the following reason: ' + status);
+            alert('Geocode was not successful for the following reason: invalid address');
           }
         });
       }
