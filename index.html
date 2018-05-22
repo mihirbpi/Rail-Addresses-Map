@@ -35,10 +35,12 @@
     </style>
   </head>
   <body>
+    <input type="text" id="myText" value="Processing...">
     <div id="map"></div>
     <script>
 
 var markerCount = 0;
+var addressjson;
       function initMap() {
         
          var map = new google.maps.Map(document.getElementById('map'), {
@@ -46,7 +48,6 @@ var markerCount = 0;
           center: {lat: 37.41629, lng: -122.12468}
         });
         var geocoder = new google.maps.Geocoder();
-        var addresses = [];
 $.ajax({
         url: 'https://sheets.googleapis.com/v4/spreadsheets/1uI3yuwTE-ErIe9ADffSMdD6RBob6O-IquzPYiflZ8Kk/values/Sheet1?key=AIzaSyDvIeECwbT5xVEE_ntRnndzJ3GAKNUFFos',
         type: 'GET',
@@ -55,15 +56,23 @@ $.ajax({
     });
 
 function displayAll(data){
-
+  var loc;
   addressjson = data;
+  console.log(data);
+  for(var j=0; j<addressjson.values[0].length; j++){
+    if(addressjson.values[0][j]=="Address"){
+      loc = j;
+    }
+  }
 (function theLoop (i) {
   setTimeout(function () {
-    addMarker(geocoder,map,addressjson.values[i][11]);
+    addMarker(geocoder,map,addressjson.values[i][loc]);
     if (--i) {         
       theLoop(i);       
     }
-  }, 100);
+  
+
+  }, 0);
 })(addressjson.values.length-1);
 } 
         }
@@ -75,8 +84,12 @@ function displayAll(data){
         var infowindow = new google.maps.InfoWindow();
 
         geocoder.geocode({'address': address}, function(results, status) {
+         
           if (status === 'OK') {
             markerCount++;
+             if(markerCount==addressjson.values.length-1){
+             document.getElementById("myText").value = "Done!";
+          }
             console.log(markerCount);
             console.log(address);
             marker = new google.maps.Marker({
