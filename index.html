@@ -59,7 +59,7 @@ function displayAll(data){
   addressjson = data;
 (function theLoop (i) {
   setTimeout(function () {
-    addMarker(geocoder,map,addressjson.values[i][5]);
+    addMarker(geocoder,map,addressjson.values[i][11]);
     if (--i) {         
       theLoop(i);       
     }
@@ -71,14 +71,22 @@ function displayAll(data){
 
       function addMarker(geocoder, resultsMap, string) {
         var address = string;
+        var marker;
+        var infowindow = new google.maps.InfoWindow();
+
         geocoder.geocode({'address': address}, function(results, status) {
           if (status === 'OK') {
             markerCount++;
             console.log(markerCount);
-            var marker = new google.maps.Marker({
+            console.log(address);
+            marker = new google.maps.Marker({
               map: resultsMap,
               position: results[0].geometry.location
             });
+          google.maps.event.addListener(marker, 'click', function() {
+          infowindow.setContent(address);
+          infowindow.open(resultsMap,marker);
+   });
           } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
                 setTimeout(function () {
                     addMarker(geocoder,resultsMap,address);
@@ -88,6 +96,8 @@ function displayAll(data){
             alert('Geocode was not successful for the following reason: invalid address');
           }
         });
+
+          
       }
     </script>
 
