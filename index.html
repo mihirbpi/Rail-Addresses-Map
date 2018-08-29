@@ -53,7 +53,7 @@
       function initMap() {
 
         map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 16,
+          zoom: 12,
           center: {lat: 37.41629, lng: -122.12468}
         });
         geocoder = new google.maps.Geocoder();
@@ -77,9 +77,8 @@
               lngColumn = j;
             }
           }
-          for(var i=addressjson.values.length-1; i>0; i--) {
-            if( (addressjson.values[i][latColumn]==null) || (addressjson.values[i][lngColumn]==null) ){
-              console.log("geocode");
+          for(var i=1; i<addressjson.values.length; i++) {
+            if( (addressjson.values[i][latColumn]==null) || (addressjson.values[i][lngColumn]==null)){
               addMarkerWithGeocode(geocoder,map,i);
             } else {
               addMarkerWithLatLng(map,i);
@@ -111,7 +110,7 @@
            }
          } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
           console.log('Geocode was not successful for the following reason: '+status);
-          addMarkerWithGeocode(geocoder, resultsMap);
+          addMarkerWithGeocode(geocoder, resultsMap, i);
         }
         else {
           console.log('Geocode was not successful for the following reason: '+status);
