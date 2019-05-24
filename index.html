@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-  <title>Rail Petition Signature Addresses Map</title>
+  <title>Gunn Class of 2019 Colleges Map</title>
   <script src = "xlsx.full.min.js"></script>
   <script src="jquerymin.js"></script>
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
@@ -44,6 +44,7 @@
       var addressColumn;
       var latColumn;
       var lngColumn;
+      var numberColumn;
       var geocoder;
       var addressjson;
       var map;
@@ -53,87 +54,56 @@
       function initMap() {
 
         map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 15,
+          zoom: 3,
           center: {lat: 37.41629, lng: -122.12468}
         });
         geocoder = new google.maps.Geocoder();
         $.ajax({
-          url: 'https://sheets.googleapis.com/v4/spreadsheets/1uI3yuwTE-ErIe9ADffSMdD6RBob6O-IquzPYiflZ8Kk/values/Sheet1?key=AIzaSyDvIeECwbT5xVEE_ntRnndzJ3GAKNUFFos',
+          url: 'https://sheets.googleapis.com/v4/spreadsheets/1l3gDJWnjksFtrsbgww7JxIjnYLljRlrDCCCcgWkzjs8/values/Sheet1?key=AIzaSyDvIeECwbT5xVEE_ntRnndzJ3GAKNUFFos',
           type: 'GET',
           dataType: "json",
           success: displayAll
         });
-
+    }
      /* Displays markers and finds where in the spreadsheet the address and lat/lng columns are */
-      function displayAll(data){
+     function displayAll(data){
           addressjson = data;
-          console.log(addressjson);
           for(var j=0; j<addressjson.values[0].length; j++){
-            if(addressjson.values[0][j]=="Address"){
+            if(addressjson.values[0][j]=="School"){
               addressColumn = j;
+            }else if(addressjson.values[0][j] == "Number"){
+              numberColumn = j;
             }else if(addressjson.values[0][j] =="Lat"){
               latColumn = j;
-            }else if(addressjson.values[0][j] =="Lng"){
+            }else if(addressjson.values[0][j] =="Long"){
               lngColumn = j;
             }
           }
           for(var i=1; i<addressjson.values.length; i++) {
             if( (addressjson.values[i][latColumn]==null) || (addressjson.values[i][lngColumn]==null)){
-              addMarkerWithGeocode(geocoder,map,i);
+              console.log("blank")
             } else {
               addMarkerWithLatLng(map,i);
             }
           }
         } 
-      }
-
-      /* Adds a marker at the address found in row i to the resultsMap using Geocode API */
-      function addMarkerWithGeocode(geocoder, resultsMap, i) {
-        var address = addressjson.values[i][addressColumn];
-        var marker;
-        var infowindow = new google.maps.InfoWindow();
-        geocoder.geocode( {'address': address}, function(results, status) {
-          if (status === 'OK') {
-            console.log('Geocode was successful!');
-            console.log(address);
-            marker = new google.maps.Marker({
-              position: results[0].geometry.location,
-              map: resultsMap
-            });
-            google.maps.event.addListener(marker, 'click', function() {
-              infowindow.setContent(address);
-              infowindow.open(resultsMap,marker);
-            });
-            markerCount++;
-            if(markerCount==addressjson.values.length-1){
-             document.getElementById("myText").value = "Done!";
-           }
-         } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-          console.log('Geocode was not successful for the following reason: '+status);
-          addMarkerWithGeocode(geocoder, resultsMap, i);
-        }
-        else {
-          console.log('Geocode was not successful for the following reason: '+status);
-        }
-      });
-    }
+      
 
     /* Adds a marker at the lat/lng found in row i to the resultsMap */
     function addMarkerWithLatLng(resultsMap, i) {
         var address = addressjson.values[i][addressColumn];
         var lat = parseFloat(addressjson.values[i][latColumn]);
         var lng = parseFloat(addressjson.values[i][lngColumn]);
+        var number = addressjson.values[i][numberColumn];
         var latLng = {lat: lat, lng: lng};
-        console.log(latLng)
         var marker;
         var infowindow = new google.maps.InfoWindow();
-        console.log(address);
         marker = new google.maps.Marker({
           position: latLng,
           map: resultsMap
         });
         google.maps.event.addListener(marker, 'click', function() {
-          infowindow.setContent(address);
+          infowindow.setContent(address+" ("+number.toString()+")");
           infowindow.open(resultsMap,marker);
         });
         markerCount++;
@@ -142,10 +112,12 @@
        }
      }
 
-   </script>
+ 
+</script>
    <script async defer
    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwkySP3nSq82zce2Ie-fVPWpRZU1huUQs&callback=initMap">
    </script>
+  
    <cffunction name="optionsMethod" access="remote" output="false" returntype="any" httpmethod="OPTIONS" description="Method to respond to AngularJS trial call">
    <cfheader name="Access-Control-Allow-Headers" value="Content-Type,x-requested-with,Authorization,Access-Control-Allow-Origin"> 
    <cfheader name="Access-Control-Allow-Methods" value="GET,OPTIONS">      
