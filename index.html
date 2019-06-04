@@ -106,7 +106,7 @@
             });
             markerCount++;
             if(markerCount==addressjson.values.length-1){
-             document.getElementById("myText").value = "Done!";
+             document.getElementById("myText").value = "Done!!";
            }
          } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
           console.log('Geocode was not successful for the following reason: '+status);
@@ -138,7 +138,7 @@
         });
         markerCount++;
         if(markerCount==addressjson.values.length-1){
-         document.getElementById("myText").value = "Done!";
+         document.getElementById("myText").value = "Done!!";
        }
      }
 
